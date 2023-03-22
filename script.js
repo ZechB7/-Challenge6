@@ -7,47 +7,6 @@ var todayWeatherElm = document.getElementById('today')
 var forecastElm = document.getElementById("forecast")
 
 dayjs.extend(window.dayjs_plugin_utc);
-dayjs.extend(window.dayjs_plugin_timezone);
-//attention
-function renderCurrentWeather(city, weather) {
-  var date = dayjs().format('M/D/YYYY');
-  // Store response data from our fetch request in variables
-  var tempF = weather.main.temp;
-  var windMph = weather.wind.speed;
-  var humidity = weather.main.humidity;
-  var iconUrl = `https://openweathermap.org/img/w/${weather.weather[0].icon}.png`;
-  var iconDescription = weather.weather[0].description || weather[0].main;
-
-  var card = document.createElement('div');
-  var cardBody = document.createElement('div');
-  var heading = document.createElement('h2');
-  var weatherIcon = document.createElement('img');
-  var tempEl = document.createElement('p');
-  var windEl = document.createElement('p');
-  var humidityEl = document.createElement('p');
-
-  card.setAttribute('class', 'card');
-  cardBody.setAttribute('class', 'card-body');
-  card.append(cardBody);
-
-  heading.setAttribute('class', 'h3 card-title');
-  tempEl.setAttribute('class', 'card-text');
-  windEl.setAttribute('class', 'card-text');
-  humidityEl.setAttribute('class', 'card-text');
-
-  heading.textContent = `${city} (${date})`;
-  weatherIcon.setAttribute('src', iconUrl);
-  weatherIcon.setAttribute('alt', iconDescription);
-  weatherIcon.setAttribute('class', 'weather-img');
-  heading.append(weatherIcon);
-  tempEl.textContent = `Temp: ${tempF}°F`;
-  windEl.textContent = `Wind: ${windMph} MPH`;
-  humidityEl.textContent = `Humidity: ${humidity} %`;
-  cardBody.append(heading, tempEl, windEl, humidityEl);
-
-  todayContainer.innerHTML = '';
-  todayContainer.append(card);
-}
 
 // get user cords
 //weather api geocode
@@ -56,7 +15,6 @@ function getCoords(searchTerm = '') {
   var apiUrl = `${baseURL}/geo/1.0/direct?q=${searchTerm}&limit=5&appid=${apiKey}`;
   fetch(apiUrl)
     .then((res) => {
-      console.log('coords res', res)
       return res.json();
     })
     .then((data) => {
@@ -72,12 +30,8 @@ function getCoords(searchTerm = '') {
 }
 
 //use geocode to get weather
-function getTodaysWeather(coords) {
-  console.log('getting todays weather')
-}
-
 function getForecast(coords) {
-  console.log('getting forecast')
+  console.log('getting todays weather')
   var { lat } = coords;
   var { lon } = coords;
   var city = coords.name;
@@ -132,10 +86,8 @@ function displayTodaysWeather(city, weather) {
   humidityEl.textContent = `Humidity: ${humidity} %`;
   cardBody.append(heading, tempEl, windEl, humidityEl);
 
-  todayContainer.innerHTML = '';
-  todayContainer.append(card);
-
-  console.log(data)
+  todayWeatherElm.innerHTML = '';
+  todayWeatherElm.append(card);
 }
 
 function displayForecast(forecast) {
@@ -182,9 +134,7 @@ function displayForecast(forecast) {
 }
 
 function renderForecast(city, data) {
-  displayTodaysWeather(city, data.list[0], data.city, 
-    // timezone
-    );
+  displayTodaysWeather(city, data.list[0], data.city);
   displayForecast(data.list);
 }
 
