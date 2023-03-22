@@ -90,7 +90,7 @@ function displayTodaysWeather(city, weather) {
   todayWeatherElm.append(card);
 }
 
-function displayForecast(forecast) {
+function display1Forecast(forecast) {
   // variables for data from api
   var iconUrl = `https://openweathermap.org/img/w/${forecast.weather[0].icon}.png`;
   var iconDescription = forecast.weather[0].description;
@@ -129,13 +129,39 @@ function displayForecast(forecast) {
   windEl.textContent = `Wind: ${windMph} MPH`;
   humidityEl.textContent = `Humidity: ${humidity} %`;
 
-  forecastContainer.append(col);
-  console.log(data)
+  forecastElm.append(col);
+}
+
+function displayXForecast(forecast){
+  var startDt = dayjs().add(1, 'day').startOf('day').unix();
+  var endDt = dayjs().add(6, 'day').startOf('day').unix();
+
+  var headingCol = document.createElement('div');
+  var heading = document.createElement('h4');
+
+  headingCol.setAttribute('class', 'col-12');
+  heading.textContent = '5-Day Forecast:';
+  headingCol.append(heading);
+
+  forecastElm.innerHTML = '';
+  forecastElm.append(headingCol);
+
+  for (var i = 0; i < forecast.length; i++) {
+
+    // First filters through all of the data and returns only data that falls between one day after the current data and up to 5 days later.
+    if (forecast[i].dt >= startDt && forecast[i].dt < endDt) {
+
+      // Then filters through the data and returns only data captured at noon for each day.
+      if (forecast[i].dt_txt.slice(11, 13) == "12") {
+        display1Forecast(forecast[i]);
+      }
+    }
+  }
 }
 
 function renderForecast(city, data) {
   displayTodaysWeather(city, data.list[0], data.city);
-  displayForecast(data.list);
+  displayXForecast(data.list);
 }
 
 function handleSearch(event){
